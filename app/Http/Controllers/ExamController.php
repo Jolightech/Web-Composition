@@ -39,7 +39,7 @@ class ExamController extends Controller
     {
         $request->validate([
             'title' => 'required|string',
-            // Ajoutez d'autres validations selon vos besoins
+            // Ajoutez d'autres validations selon vos besoin
         ]);
 
         $exam->update($request->all());
