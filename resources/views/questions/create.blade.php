@@ -3,9 +3,9 @@
 @extends('layouts.app')
 
 @section('content')
-    <h1>Créer une nouvelle Question pour l'examen "{{ $exam->title }}"</h1>
+    <h1>Créer une nouvelle Question pour l'épreuves "{{ $epreuves->Nom }}"</h1>
 
-    <form action="{{ route('questions.store', $exam) }}" method="post">
+    <form action="{{ route('questions.store', $epreuves) }}" method="post">
         @csrf
         <label for="content">Contenu de la question :</label>
         <input type="text" name="content" required>

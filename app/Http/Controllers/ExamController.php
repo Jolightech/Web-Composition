@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Exam;
+use App\Models\Epreuve;
 use Illuminate\Http\Request;
 
 class ExamController extends Controller
 {
     public function index()
     {
-        $exams = Exam::all();
+        $exams = Epreuve::all();
         return view('exams.index', compact('exams'));
     }
 
@@ -21,11 +21,11 @@ class ExamController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string',
+            'Nom' => 'required|string',
             // Ajoutez d'autres validations selon vos besoins
         ]);
 
-        Exam::create($request->all());
+        Epreuve::create($request->all());
 
         return redirect()->route('exams.index')->with('success', 'Exam créé avec succès.');
     }
@@ -38,7 +38,7 @@ class ExamController extends Controller
     public function update(Request $request, Exam $exam)
     {
         $request->validate([
-            'title' => 'required|string',
+            'Nom' => 'required|string',
             // Ajoutez d'autres validations selon vos besoin
         ]);
 

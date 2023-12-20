@@ -1,16 +1,12 @@
-<!-- resources/views/exams/create.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
-    <h1>Créer un nouvel Examen</h1>
-
+    <h1>Créer une nouvelle épreuve</h1>
     <form action="{{ route('exams.store') }}" method="post">
         @csrf
-        <label for="title">Titre de l'examen :</label>
-        <input type="text" name="title" required>
-        <!-- Ajoutez d'autres champs selon vos besoins -->
-
-        <button type="submit">Créer l'examen</button>
+        <label for="Nom">Nom de l'épreuve :</label>
+        <input type="text" name="Nom" required>
+        <button type="submit">Créer l'épreuve</button>
     </form>
+    <a href="{{ route('exams.index') }}">Retour à la liste des épreuves</a>
 @endsection
