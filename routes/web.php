@@ -34,10 +34,18 @@ Route::get('/epreuves/create', [EpreuveController::class, 'create'])->name('epre
 Route::get('/epreuves/{epreuve}', [EpreuveController::class, 'show'])->name('epreuves.show');
 
 // Affiche le formulaire de modification d'une épreuve
-Route::get('/epreuves/{epreuve}/edit', [EpreuveController::class, 'edit'])->name('epreuves.edit');
+Route::get('/epreuves/{epreuve}/modifier', [EpreuveController::class, 'edit'])->name('epreuves.edit');
 
 // Met à jour une épreuve
 Route::put('/epreuves/{epreuve}', [EpreuveController::class, 'update'])->name('epreuves.update');
 
 // Supprime une épreuve
 Route::delete('/epreuves/{epreuve}', [EpreuveController::class, 'destroy'])->name('epreuves.destroy');
+
+use App\Http\Controllers\QuestionController;
+
+//Pour afficher le formulaire de création de questio,n pour une épreuve
+Route::resource('questions', QuestionController::class);
+
+Route::get('questions/create/{epreuve_id}', [QuestionController::class, 'create'])->name('questions.create');
+Route::resource('questions', QuestionController::class);

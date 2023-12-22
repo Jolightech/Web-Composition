@@ -22,6 +22,8 @@
                     <td>
                         <a href="{{ route('epreuves.show', ['epreuve' => $epreuve->id]) }}">Voir</a>
                         <a href="{{ route('epreuves.edit', ['epreuve' => $epreuve->id]) }}">Modifier</a>
+                         <!-- Bouton de création des questions -->
+                        <a href="{{ route('questions.create', ['epreuve_id' => $epreuve->id]) }}" class="btn btn-success">Rédiger le questionnaire</a>
                         <!-- Ajoutez d'autres actions selon vos besoins -->
                     </td>
                 </tr>

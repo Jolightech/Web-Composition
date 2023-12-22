@@ -43,17 +43,17 @@ class EpreuveController extends Controller
     }
 
     public function update(Request $request, $id)
-    {
-        $request->validate([
-            'Nom' => 'required|string|max:255',
-            // Ajoutez d'autres règles selon vos besoins
-        ]);
+{
+    $request->validate([
+        'Nom' => 'required|string|max:255',
+        // Ajout d'autres règles de validation selon vos besoins
+    ]);
 
-        $epreuve = Epreuve::findOrFail($id);
-        $epreuve->update($request->all());
+    $epreuve = Epreuve::findOrFail($id);
+    $epreuve->update($request->all());
 
-        return redirect()->route('epreuves.index')->with('success', 'Épreuve mise à jour avec succès');
-    }
+    return redirect()->route('epreuves.index')->with('success', 'Épreuve mise à jour avec succès');
+}
 
     public function destroy($id)
     {
