@@ -17,13 +17,27 @@ use Illuminate\Support\Facades\Route;
     return view('welcome');
 });*/
 
-// routes/web.php
+use App\Http\Controllers\EpreuveController;
 
-use App\Http\Controllers\ExamController;
-/**/
-Route::get('/exams/create', [ExamController::class, 'create'])->name('exams.create');
-Route::post('/exams', [ExamController::class, 'store'])->name('exams.store');
-Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
-Route::get('/exams/{id}', [ExamController::class, 'show'])->name('exams.show');
-/*Route::get('/exams', [ExamController::class, 'index'])->name('exams.index');
-Route::get('/exams/{id}', [ExamController::class, 'show'])->name('exams.show');*/
+Route::resource('epreuves', EpreuveController::class);
+
+// Affiche la liste des épreuves
+Route::get('/epreuves', [EpreuveController::class, 'index'])->name('epreuves.index');
+
+// Affiche le formulaire de création d'épreuve
+Route::get('/epreuves/create', [EpreuveController::class, 'create'])->name('epreuves.create');
+
+// Enregistre une nouvelle épreuve
+//Route::post('/epreuves/create', [EpreuveController::class, 'store'])->name('epreuves.store');
+
+// Affiche les détails d'une épreuve
+Route::get('/epreuves/{epreuve}', [EpreuveController::class, 'show'])->name('epreuves.show');
+
+// Affiche le formulaire de modification d'une épreuve
+Route::get('/epreuves/{epreuve}/edit', [EpreuveController::class, 'edit'])->name('epreuves.edit');
+
+// Met à jour une épreuve
+Route::put('/epreuves/{epreuve}', [EpreuveController::class, 'update'])->name('epreuves.update');
+
+// Supprime une épreuve
+Route::delete('/epreuves/{epreuve}', [EpreuveController::class, 'destroy'])->name('epreuves.destroy');

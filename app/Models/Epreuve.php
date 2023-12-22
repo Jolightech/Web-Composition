@@ -7,9 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Epreuve extends Model
 {
-    use HasFactory;
     protected $fillable = [
         'Nom',
+        // Ajoutez d'autres colonnes ici selon vos besoins
     ];
-
 }
