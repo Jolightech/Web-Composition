@@ -1,4 +1,5 @@
 <?php
+// app/Models/Question.php
 
 namespace App\Models;
 
@@ -6,11 +7,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = ['type', 'question', 'reponse_attendue', 'note', 'epreuve_id'];
+    protected $fillable = ['type', 'question'];
 
-    // Définissez les relations ici, par exemple :
-    public function epreuve()
+    public function addOption($text)
     {
-        return $this->belongsTo(Epreuve::class);
+        return $this->options()->create(['text' => $text]);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(Question::class, 'parent_id')->where('type', 'option');
     }
 }

@@ -23,13 +23,13 @@ class QuestionController extends Controller
         // Passez l'épreuve à la vue
         return view('questions.create', compact('epreuve'));
     }
-public function store(Request $request, $epreuve_id)
+public function store(Request $request)
 {
     $request->validate([
-        'type' => 'required|string',
-        'question' => 'required|string',
+        'type' => 'required|in:choix_multiple,choix_unique,reponse_texte',
+        'question' => 'required|string|max:255',
         'reponse_attendue' => 'required|string',
-        'note' => 'required|numeric|min:0|max:20',
+        'note' => 'required|numeric|min:0|max:100',
     ]);
 
     $epreuve = Epreuve::findOrFail($epreuve_id);
@@ -41,9 +41,30 @@ public function store(Request $request, $epreuve_id)
         'note' => $request->input('note'),
     ]);
 
-    $epreuve->questions()->save($question);
+   // Enregistrement de la question dans la base de données
+   $question->save();
 
-    return redirect()->route('epreuves.index')->with('success', 'Question ajoutée avec succès');
+   // Enregistrement des options si elles existent
+   if ($request->has('option')) {
+       $options = $request->input('option');
+       foreach ($options as $option) {
+           // Enregistrez chaque option associée à la question
+           $question->options()->create(['text' => $option]);
+       }
+   }
+   if ($type == 'choix_unique' || $type == 'choix_multiple') {
+    $options = $request->input('option');
+    $reponses = $request->input('reponse');
+
+    // $options est un tableau d'options, $reponses est un tableau d'indices des réponses correctes
+    foreach ($options as $index => $option) {
+        $estReponseCorrecte = in_array($index + 1, $reponses);
+        // Traitez chaque option et si elle est la réponse correcte
+    }
+}
+
+
+   return redirect()->route('questions.create')->with('success', 'Question créée avec succès.');
 }
 
     // ... autres méthodes du contrôleur
