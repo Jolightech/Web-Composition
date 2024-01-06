@@ -12,12 +12,11 @@ class CreateQuestionsTable extends Migration
         Schema::create('questions', function (Blueprint $table) {
             $table->id();
             $table->enum('type', ['choix_multiple', 'choix_unique', 'reponse_texte']);
-            $table->text('question');
-            $table->text('reponse_attendue')->nullable();
+            $table->text('enonce');
+            $table->json('reponse_attendue')->nullable();
             $table->integer('note');
             $table->unsignedBigInteger('epreuve_id');
             $table->timestamps();
-
             $table->foreign('epreuve_id')->references('id')->on('epreuves')->onDelete('cascade');
         });
     }

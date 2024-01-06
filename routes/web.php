@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
 });*/
 
 use App\Http\Controllers\EpreuveController;
-
+use App\Http\Controllers\QuestionController;
 Route::resource('epreuves', EpreuveController::class);
 
 // Affiche la liste des épreuves
@@ -42,10 +42,15 @@ Route::put('/epreuves/{epreuve}', [EpreuveController::class, 'update'])->name('e
 // Supprime une épreuve
 Route::delete('/epreuves/{epreuve}', [EpreuveController::class, 'destroy'])->name('epreuves.destroy');
 
-use App\Http\Controllers\QuestionController;
 
-//Pour afficher le formulaire de création de questio,n pour une épreuve
+
+
+
+
+// web.php
+
+// Utilisation de la ressource pour les routes RESTful de QuestionController
 Route::resource('questions', QuestionController::class);
 
-Route::get('questions/create/{epreuve_id}', [QuestionController::class, 'create'])->name('questions.create');
-Route::resource('questions', QuestionController::class);
+// Route personnalisée pour l'affichage du formulaire de création de question liée à une épreuve
+Route::get('/questions/create/{epreuve_id}', [QuestionController::class, 'create'])->name('questions.create');

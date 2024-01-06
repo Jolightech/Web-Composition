@@ -1,6 +1,4 @@
 <!-- resources/views/questions/create.blade.php -->
-<!-- resources/views/questions/create.blade.php -->
-
 @extends('layouts.app')
 
 @section('content')
@@ -11,179 +9,125 @@
     @csrf
 
     <div class="form-group">
+        <label for="enonce">Énoncé de la question</label>
+        <input type="text" id="enonce" name="enonce" class="form-control" placeholder="Saisissez la question">
+    </div>
+
+    <div class="form-group">
         <label for="type">Type de question</label>
         <select name="type" id="type" class="form-control">
             <option value="choix_multiple">Choix Multiple</option>
             <option value="choix_unique">Choix Unique</option>
             <option value="reponse_texte">Réponse Texte</option>
-            <!-- Ajoutez d'autres types si nécessaire -->
         </select>
     </div>
 
-    <div class="form-group" id="questionContainer">
-        <!-- Les champs de question seront ajoutés ici par JavaScript -->
+    <div class="form-group" id="optionsContainer" style="display: none;">
+        <label for="ajouterProposition"></label>
+        <div id="propositionsContainer"></div>
+        <button type="button" id="ajouterProposition">Ajouter une proposition</button>
     </div>
 
-    <div class="form-group" id="optionsContainer" style="display: none;">
-        <label for="options">Options de réponse</label>
-        <input type="text" name="options[]" class="form-control" placeholder="Option 1">
+    <div id="noteContainer">
+        <label for="noteQuestion">Note de la question</label>
+        <input type="text" id="noteQuestion" name="noteQuestion" class="form-control" placeholder="Saisissez la note de la question">
     </div>
 
     <div class="form-group" id="reponseContainer" style="display: none;">
-        <label for="reponse">Réponse</label>
-        <input type="text" name="reponse" class="form-control" placeholder="Saisissez la réponse">
+        <label for="reponse">Réponse Attendue</label>
+        <input type="text" id="reponse" name="reponse" class="form-control" placeholder="Saisissez la réponse attendue">
     </div>
 
-    <div class="form-group" id="noteContainer" style="display: none;">
-        <label for="note">Note sur 100</label>
-        <input type="number" name="note" class="form-control" placeholder="Saisissez la note" min="0" max="100">
-    </div>
-
+    <br><br>
     <button type="submit" class="btn btn-primary">Enregistrer</button>
 </form>
-
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const questionForm = document.getElementById('questionForm');
-    const typeSelect = document.getElementById('type');
-    const questionContainer = document.getElementById('questionContainer');
-    const optionsContainer = document.getElementById('optionsContainer');
-    const reponseContainer = document.getElementById('reponseContainer');
-    const noteContainer = document.getElementById('noteContainer');
+    //Affichage des champs d'option pour les types choix_unique et choix_multiple
+    $(document).ready(function () {
+        $("#type").change(function () {
+            var selectedType = $(this).val();
+            if (selectedType === "choix_unique" || selectedType === "choix_multiple" ) {
+                $("#optionsContainer").show();
+            } else {
+                $("#optionsContainer").hide();
+            }
+            if (selectedType === "reponse_texte") {
+            $("#noteContainer, #reponseContainer").show();
+            }
+        });
+        //Ajout des propositions de réponses
 
-    typeSelect.addEventListener('change', function () {
-        questionContainer.innerHTML = '';
-        optionsContainer.style.display = 'none';
-        reponseContainer.style.display = 'none';
-        noteContainer.style.display = 'none';
 
-        switch (typeSelect.value) {
-            case 'choix_multiple':
-                addChoixMultipleFields();
-                reponseContainer.style.display = 'block';
-                break;
-            case 'choix_unique':
-                addChoixUniqueFields();
-           
-                noteContainer.style.display = 'block';
-                break;
-            case 'reponse_texte':
-                addReponseTexteFields();
-                reponseContainer.style.display = 'block';
-                noteContainer.style.display = 'block';
-                break;
-        }
+        $("#ajouterProposition").click(function () {
+                            var newIndex = $("#propositionsContainer input").length / 2 + 1;
+                    var newInput = '';
+                    if ($("#type").val() === "choix_unique") {
+                        newInput += '<div><input type="radio" name="reponse" value="' + newIndex + '">';
+                    } else if ($("#type").val() === "choix_multiple") {
+                        newInput += '<div><input type="checkbox" name="reponses[]" value="' + newIndex + '">';
+                    }
+                    newInput += '<input type="text" name="propositions[]" class="form-control" placeholder="Proposition ' + newIndex + '"></div>';
+                    $("#propositionsContainer").append(newInput);
+        });
     });
+    $("#questionForm").submit(function () {
+        // Lors de la soumission du formulaire, je cherche l'index de la proposition sélectionnée
+        var selectedType = $("#type").val();
 
-    function addChoixMultipleFields() {
-        const questionLabel = document.createElement('label');
-        questionLabel.textContent = 'Question à choix multiples';
-        questionContainer.appendChild(questionLabel);
+        // Pour le type choix_unique
+        if (selectedType === "choix_unique") {
+            // Création un objet pour stocker les options et la réponse attendue
+            var optionsObj = {};
+            var reponseAttendue = null;
 
-        const questionInput = document.createElement('input');
-        questionInput.type = 'text';
-        questionInput.name = 'question';
-        questionInput.placeholder = 'Saisissez la question à choix multiples';
-        questionContainer.appendChild(questionInput);
+            // Sélection tous les champs d'options dans #propositionsContainer
+            $("#propositionsContainer input[name='propositions[]']").each(function (index) {
+                // Ajout de chaque option à l'objet avec un nom de propriété unique
+                optionsObj['option_' + index] = $(this).val();
 
-        const optionsLabel = document.createElement('label');
-        optionsLabel.textContent = 'Options';
-        questionContainer.appendChild(optionsLabel);
+                // Vérifier si un champ radio est coché (pour choix unique)
+                if ($(this).next().is(':checked')) {
+                    reponseAttendue = index;
+                }
+            });
 
-        for (let i = 1; i <= 3; i++) {
-            const optionInput = createOptionInput(i);
-            questionContainer.appendChild(optionInput);
+            var selectedProposition = $("input[name='reponse']:checked").val();
+            if (selectedProposition === undefined) {
+                alert("Veuillez sélectionner une proposition pour la question de choix unique.");
+                return false; // J'empêche l'envoi du formulaire si aucune proposition n'est sélectionnée
+            }
+
+            // Mise à jour le champ reponse avec l'index de la proposition sélectionnée
+            $("#reponse").val(selectedProposition);
         }
 
-        const addOptionButton = createButton('Ajouter une option', function () {
-            const optionInput = createOptionInput(questionContainer.children.length / 2 + 1);
-            questionContainer.appendChild(optionInput);
-        });
-        questionContainer.appendChild(addOptionButton);
+        // Pour le type choix_multiple
+        if (selectedType === "choix_multiple") {
+            // Création d'un tableau pour stocker les options sélectionnées
+            var optionsSelectionnees = [];
 
-        const removeOptionButton = createButton('Supprimer la dernière option', function () {
-            if (questionContainer.children.length > 2) {
-                questionContainer.removeChild(questionContainer.lastChild);
-                questionContainer.removeChild(questionContainer.lastChild);
-            }
-        });
-        questionContainer.appendChild(removeOptionButton);
-    }
+            // Sélection de tous les champs checkbox dans #propositionsContainer
+            $("#propositionsContainer input[name='reponses[]']:checked").each(function () {
+                // Ajouter chaque option sélectionnée au tableau
+                optionsSelectionnees.push($(this).val());
+            });
 
-    function addChoixUniqueFields() {
-        const questionLabel = document.createElement('label');
-        questionLabel.textContent = 'Question à choix unique';
-        questionContainer.appendChild(questionLabel);
-
-        const questionInput = document.createElement('input');
-        questionInput.type = 'text';
-        questionInput.name = 'question';
-        questionInput.placeholder = 'Saisissez la question à choix unique';
-        questionContainer.appendChild(questionInput);
-
-        const optionsLabel = document.createElement('label');
-        optionsLabel.textContent = 'Options';
-        questionContainer.appendChild(optionsLabel);
-
-        for (let i = 1; i <= 3; i++) {
-            const optionInput = createOptionInput(i);
-            questionContainer.appendChild(optionInput);
-
-            const radioInput = createRadioInput(i);
-            questionContainer.appendChild(radioInput);
+            // Mise à jour le champ reponses avec le tableau d'options sélectionnées
+            $("#reponse").val(optionsSelectionnees.join(', '));
         }
-
-        const addOptionButton = createButton('Ajouter une option', function () {
-            const optionInput = createOptionInput(questionContainer.children.length / 2 + 1);
-            questionContainer.appendChild(optionInput);
-        });
-        questionContainer.appendChild(addOptionButton);
-
-        const removeOptionButton = createButton('Supprimer la dernière option', function () {
-            if (questionContainer.children.length > 2) {
-                questionContainer.removeChild(questionContainer.lastChild);
-                questionContainer.removeChild(questionContainer.lastChild);
-            }
-        });
-        questionContainer.appendChild(removeOptionButton);
+        if (selectedType === "reponse_texte") {
+        // Mise à jour du champ reponse avec la valeur du champ texte
+        var reponseTexte = $("#reponse").val();
+        $("#reponse").val(reponseTexte);
     }
 
-    function createOptionInput(index) {
-        const optionInput = document.createElement('input');
-        optionInput.type = 'text';
-        optionInput.name = 'option[]'; // Utilisez un tableau pour les options
-        optionInput.placeholder = 'Option ' + index;
-        return optionInput;
-    }
+        return true; // Autorisation de l'envoi du formulaire
+     });
 
-    function createButton(text, onClick) {
-        const button = document.createElement('button');
-        button.type = 'button';
-        button.textContent = text;
-        button.addEventListener('click', onClick);
-        return button;
-    }
 
-    function addReponseTexteFields() {
-        const questionLabel = document.createElement('label');
-        questionLabel.textContent = 'Question à réponse texte';
-        questionContainer.appendChild(questionLabel);
-
-        const questionInput = document.createElement('input');
-        questionInput.type = 'text';
-        questionInput.name = 'question';
-        questionInput.placeholder = 'Saisissez la question à réponse texte';
-        questionContainer.appendChild(questionInput);
-    }
-
-    function createRadioInput(index) {
-        const radioInput = document.createElement('input');
-        radioInput.type = 'radio';
-        radioInput.name = 'reponse[]';  // Le même nom pour tous les champs radio
-        radioInput.value = index;
-        return radioInput;
-    }
-});
 </script>
+
+
 
 @endsection

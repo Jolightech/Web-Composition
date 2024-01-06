@@ -7,15 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = ['type', 'question'];
+    protected $fillable = ['type', 'enonce', 'reponse_attendue', 'note', 'epreuve_id']; 
 
-    public function addOption($text)
+    public function epreuve()
     {
-        return $this->options()->create(['text' => $text]);
+        return $this->belongsTo(Epreuve::class);
     }
-
-    public function options()
-    {
-        return $this->hasMany(Question::class, 'parent_id')->where('type', 'option');
-    }
+    
 }
+
